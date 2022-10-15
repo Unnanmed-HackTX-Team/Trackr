@@ -24,36 +24,65 @@ export const BarcodeScanner = () => {
 };
 
 export function IDsearch(result, onClick){
-  return ()
+  return (
+    <button style={{ float: 'right' }} onClick={onClick}>
+     </button>
+  );
+}
+MetaData = []
+//need to put data into the table
+export function MetaData(){
+  return (
+    <div className = "MetaData">
+      <table className= "MetaData_table">
+        <tr>
+          <th>Date</th>
+          <th>Creator</th>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+        {MetaData.map((val, key) =>{
+        return(
+          <tr key = {key}>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        )
+        })}
+      </table>
+    </div>
+  );
 }
 
+const DropCategory = () => {
+  return (
+    <div>
+      <label>
+        
+        <select>
+          <option value=""></option>
+          <option value=""></option>
+          <option value=""></option>
+        </select>
+      </label>
+    </div>
+  );
+};
 
-// export function SignInPrompt({ greeting, onClick }) {
-//   return (
-//     <main>
-//       <h1>
-//         The contract says: <span className="greeting">{greeting}</span>
-//       </h1>
-//       <h3>
-//         Welcome to NEAR!
-//       </h3>
-//       <p>
-//         Your contract is storing a greeting message in the NEAR blockchain. To
-//         change it you need to sign in using the NEAR Wallet. It is very simple,
-//         just use the button below.
-//       </p>
-//       <p>
-//         Do not worry, this app runs in the test network ("testnet"). It works
-//         just like the main network ("mainnet"), but using NEAR Tokens that are
-//         only for testing!
-//       </p>
-//       <br />
-//       <p style={{ textAlign: 'center' }}>
-//         <button onClick={onClick}>Sign in with NEAR Wallet</button>
-//       </p>
-//     </main>
-//   );
-// }
+export function SignInPrompt({ onClick }) {
+  return (
+    <main>
+      <h3>
+        Welcome to Trackr!
+      </h3>
+      <br />
+      <p style={{ textAlign: 'center' }}>
+        <button onClick={onClick}>Sign in with NEAR Wallet</button>
+      </p>
+    </main>
+  );
+}
 
 // export function SignOutButton({ accountId, onClick }) {
 //   return (
@@ -85,3 +114,4 @@ export function IDsearch(result, onClick){
 //     </>
 //   );
 // }
+

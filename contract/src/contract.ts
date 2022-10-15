@@ -1,26 +1,23 @@
-import {NearBindgen, near, call, view} from 'near-sdk-js';
-import { v4 as uuidv4 } from 'uuid';
+import { NearBindgen, call, near, Vector, view } from "near-sdk-js";
 
 @NearBindgen({})
-class HelloNear {
-    greeting: string = "Hello";
+class Thing {
+    vector: Vector;
 
-    @view({}) // This method is read-only and can be called for free
-    get_greeting(): string {
-        return this.greeting;
+    constructor() {
+        this.vector = new Vector('unique-id-vector1');
     }
 
-    @call({}) // This method changes the state, for which it cost gas
-    set_greeting({message}: { message: string }): void {
-        // Record a log permanently to the blockchain!
-        near.log(`Saving greeting ${message}`);
-        this.greeting = message;
+    @view({})
+    get_thing(account_id: number): Metadata {
+        near.log("get_thing", account_id);
+        return this.vector.get(account_id) as Metadata;
     }
 
     @call({})
-    create_thing(metadata: Metadata): string {
-        near.promiseCreate(`${near.currentAccountId}.${uuidv4()}`, "")
-        return "account id";
+    set_thing(metaData: Metadata): void {
+        near.log("set_thing", metaData);
+        this.vector.push(metaData);
     }
 }
 
@@ -37,4 +34,5 @@ interface Metadata {
     DateCreated: number;
     CreatedBy: string;
     Description: string;
+    Logs: Log[];
 }

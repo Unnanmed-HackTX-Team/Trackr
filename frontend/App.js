@@ -3,13 +3,17 @@ import React from 'react';
 
 import './assets/global.css';
 
-import { BarcodeScanner, EducationalText, SignInPrompt, SignOutButton } from './ui-components';
+import { BarcodeScanner, EducationalText, SignInPrompt, SignOutButton, Popup, MetaData } from './ui-components';
 
 
 export default function App({ isSignedIn, helloNEAR, wallet }) {
-
-
   
+  
+  const [buttonPopup, setButtonPopup] = React.useState(false);
+  const [trackId, setButtonPopup] = React.useState(false);
+
+
+ 
   // const [valueFromBlockchain, setValueFromBlockchain] = React.useState();
 
   // const [uiPleaseWait, setUiPleaseWait] = React.useState(true);
@@ -25,11 +29,17 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
   // }, []);
 
   /// If user not signed-in with wallet - show prompt
-  // if (!isSignedIn) {
+  if (!isSignedIn) {   
     // Sign-in flow will reload the page later
-    // return <SignInPrompt greeting={valueFromBlockchain} onClick={() => wallet.signIn()} />;
-    return <BarcodeScanner />;
-  // }
+    return (
+      <div>
+        <input type="text" name="id number?" onClick={setTrackId} /> 
+        <br/>
+        <SignInPrompt onClick={() => wallet.signIn()} />
+      </div>
+    );
+    // return <BarcodeScanner />;
+  }
 
 //   function changeGreeting(e) {
 //     e.preventDefault();

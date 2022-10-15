@@ -229,3 +229,27 @@ main.please-wait .loader:after{
     transform: rotate(360deg);
   }
 }
+
+.popup{
+  position: fixed; 
+  top : 0; 
+  left: 0; 
+  width: 100%;
+  height: 100vh;
+  
+}
+
+.MetaData{
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+}
+
+.MetaData_table{
+  border: 2px solid forestgreen;
+  width: 800px;
+  height: 200px;
+}
