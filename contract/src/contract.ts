@@ -1,4 +1,5 @@
 import {NearBindgen, near, call, view} from 'near-sdk-js';
+import { v4 as uuidv4 } from 'uuid';
 
 @NearBindgen({})
 class HelloNear {
@@ -15,6 +16,12 @@ class HelloNear {
         near.log(`Saving greeting ${message}`);
         this.greeting = message;
     }
+
+    @call({})
+    create_thing(metadata: Metadata): string {
+        near.promiseCreate(`${near.currentAccountId}.${uuidv4()}`, "")
+        return "account id";
+    }
 }
 
 interface Log {
@@ -25,7 +32,7 @@ interface Log {
     Notes: string;
 }
 
-interface MetaData {
+interface Metadata {
     DateLastUpdated: number;
     DateCreated: number;
     CreatedBy: string;

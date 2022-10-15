@@ -3,7 +3,7 @@
 export class HelloNEAR {
   constructor({ contractId, walletToUse }) {
     this.contractId = contractId;
-    this.wallet = walletToUse;    
+    this.wallet = walletToUse;
   }
 
   async getGreeting() {

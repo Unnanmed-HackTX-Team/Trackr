@@ -16,5 +16,8 @@
   "devDependencies": {
     "near-cli": "^3.3.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "near-sdk-js": "^0.5.0",
+    "uuid": "^9.0.0"
+  }
 }
