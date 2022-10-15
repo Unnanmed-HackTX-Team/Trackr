@@ -11,7 +11,7 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
 
   const [uiPleaseWait, setUiPleaseWait] = React.useState(true);
 
-  // Get blockchian state once on component load
+  // Get blockchain state once on component load
   React.useEffect(() => {
     helloNEAR.getGreeting()
       .then(setValueFromBlockchain)
