@@ -1,7 +1,7 @@
 /* A helper file that simplifies using the wallet selector */
 
 // near api js
-import { providers, connect, keyStores, WalletConnection } from 'near-api-js';
+import { providers, connect, keyStores, WalletConnection, KeyPair } from 'near-api-js';
 
 // wallet selector UI
 import '@near-wallet-selector/modal-ui/styles.css';
@@ -10,9 +10,9 @@ import LedgerIconUrl from '@near-wallet-selector/ledger/assets/ledger-icon.png';
 import MyNearIconUrl from '@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png';
 
 // wallet selector options
-import { setupWalletSelector } from '@near-wallet-selector/core';
-import { setupLedger } from '@near-wallet-selector/ledger';
-import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
+// import { setupWalletSelector } from '@near-wallet-selector/core';
+// import { setupLedger } from '@near-wallet-selector/ledger';
+// import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
 
 const THIRTY_TGAS = '30000000000000';
 const NO_DEPOSIT = '0';
@@ -35,41 +35,48 @@ export class Wallet {
 
   // To be called when the website loads
   async startUp() {
+    const keyStore = new keyStores.BrowserLocalStorageKeyStore();
+    const params = new URL(document.location).searchParams;
+
+    if (params.get("account_id") && params.get("public_key")) {
+     await keyStore.setKey(this.network, params.get("account_id"), KeyPair.fromString(localStorage.pendingKey)) 
+    }
+
     const connectionConfig = {
       networkId: "testnet",
-      keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+      keyStore,
       nodeUrl: "https://rpc.testnet.near.org",
       walletUrl: "https://wallet.testnet.near.org",
       helperUrl: "https://helper.testnet.near.org",
       explorerUrl: "https://explorer.testnet.near.org",
     };
 
-    // connect to NEAR
-    const nearConnection = await connect(connectionConfig);
+    const near = await connect(connectionConfig);
 
-    // create wallet connection
-    const walletConnection = new WalletConnection(nearConnection);
-    this.walletSelector = await setupWalletSelector({
-      network: this.network,
-      modules: [setupMyNearWallet({ iconUrl: MyNearIconUrl }),
-      setupLedger({ iconUrl: LedgerIconUrl })],
-    });
+    const wallet = new WalletConnection(near, 'trackr');
 
-    const isSignedIn = this.walletSelector.isSignedIn();
+    const isSignedIn = wallet.isSignedIn();
 
+    this.wallet = wallet;
     if (isSignedIn) {
-      this.wallet = await this.walletSelector.wallet();
-      this.accountId = this.walletSelector.store.getState().accounts[0].accountId;
+      this.accountId = wallet.getAccountId();
     }
 
     return isSignedIn;
   }
 
   // Sign-in method
-  signIn() {
-    const description = 'Please select a wallet to sign in.';
-    const modal = setupModal(this.walletSelector, { contractId: this.createAccessKeyFor, description });
-    modal.show();
+  async signIn() {
+    if (!this.wallet) {
+      await this.startUp();
+    }
+
+    const newUrl = new URL("https://wallet.testnet.near.org/login/");
+    const keyPair = await KeyPair.fromRandom('ed25519');
+    localStorage.pendingKey = keyPair.toString();
+    newUrl.searchParams.set('public_key', keyPair.getPublicKey());
+    newUrl.searchParams.set('success_url', new URL(window.location.href));
+    window.open(newUrl, "_blank")
   }
 
   // Sign-out method

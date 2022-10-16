@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
 import contractWasm from "url:./hello_near.wasm";
-import { connect, keyStores } from 'near-api-js';
+import { connect, keyStores, KeyPair } from 'near-api-js';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 
@@ -80,17 +80,35 @@ function Create({wallet}) {
 
   async function createNewThing(wallet) {
     // TODO: validate that all things are set
+    const keyStore = new keyStores.BrowserLocalStorageKeyStore()
     const near = await connect({
       networkId: 'testnet',
-      keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+      keyStore,
       nodeUrl: 'https://rpc.testnet.near.org'
     });
     const account = await near.account(wallet.accountId);
-    const keyPair = await account.findAccessKey(null, null)
-    const subAccountId = `${uuid()}.${wallet.accountId}`;
-    const newAccount = await account.createAndDeployContract(subAccountId, keyPair.publicKey, contractWasm, 5);
-    console.log(newAccount)
+    const keyPair = await keyStore.getKey('testnet', wallet.accountId)
+    
+    const contractAccountId = `${uuid()}.${wallet.accountId}`;
+    await account.createAccount(contractAccountId, keyPair.getPublicKey(), "8000000000000000000000000");
+    await keyStore.setKey('testnet', contractAccountId, keyPair);
+    const contractAccount = await near.account(contractAccountId);
+    const contractBytes = new Uint8Array(await httpGetAsync(contractWasm))
+    contractAccount.deployContract(contractBytes)
   }
+}
+
+function httpGetAsync(theUrl) {
+  return new Promise ((resolve, reject) => {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.responseType = 'arraybuffer';
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            resolve(xmlHttp.response);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+    xmlHttp.send(null); 
+  })
 }
 
 //   
