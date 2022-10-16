@@ -29,9 +29,10 @@ interface Log {
 }
 
 interface Metadata {
-    DateLastUpdated: number;
     DateCreated: number;
-    CreatedBy: string;
+    DateUpdated: number;
+    Creator: string;
+    Name: string;
     Description: string;
     Logs: Log[];
 }

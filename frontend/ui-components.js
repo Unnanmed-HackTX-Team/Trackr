@@ -8,7 +8,6 @@ import favicon from "./assets/favicon.png";
 import { CallTracker } from 'assert';
 import { randomInt } from 'crypto';
 
-// ReactDOM.render(<QRCode value="hey" />, document.getElementById("Container"));
 
 export function Navbar() {
   return (
@@ -36,7 +35,6 @@ export function Navbar() {
             </li>
           </ul>
         </div>
-
       </nav>
     </div>
   );
@@ -101,17 +99,19 @@ export function Track() {
           <table className="table table-small">
             <thead>
               <tr>
-                <th >Date</th>
+                <th >Created</th>
+                <th >Updated</th>
                 <th >Creator</th>
                 <th >Name</th>
-                <th >Description</th>
+                <th >Desc</th>
               </tr>
             </thead>
             <tbody>
-              {Metadata.map((key) => {
+              {Metadata.map((val, key) => {
                 return (
                   <tr key={key}>
-                    <td >{val.date}</td>
+                    <td >{val.created}</td>
+                    <td >{val.updated}</td>
                     <td >{val.creator}</td>
                     <td >{val.name}</td>
                     <td >{val.description}</td>
@@ -155,9 +155,12 @@ export function Track() {
   );
 
   function TrackItem(id) {
+    // clear logs and metadata
     setLogs([]);
-    console.log("Tracking item with ID: " + id);
+    setMetadata([]);
     setDummy("dummyperson");
+
+    console.log("Tracking item with ID: " + id);
 
     for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
       Logs.push({
@@ -170,10 +173,28 @@ export function Track() {
 
       setLogs(Logs);
     }
+
+    for (let i = 0; i < 1; i++) {
+      Metadata.push({
+        created: new Date().toLocaleString(),
+        updated: new Date().toLocaleString(),
+        creator: "C " + i,
+        name: "N " + i,
+        description: "D " + i
+      });
+
+      setMetadata(Metadata);
+    }
+
+    console.log("Logs: " + Logs);
+    console.log("Metadata: " + Metadata);
+    setDummy("dummyperson");
   };
 }
 
 export function Create({ wallet }) {
+  let showQr = false;
+  const [generateValue, setGenerateValue] = useState("");
   return (
     <>
       <div className="text-center font-italic mt-4">
@@ -181,26 +202,32 @@ export function Create({ wallet }) {
       </div>
 
       <form>
-        <input id="item-name" type="text" className="form-control mt-5" placeholder="Item Name" aria-label="Item Name" aria-describedby="item-search-submit-a" />
-        <label htmlFor="category-name" className="form-label"></label>
-        <select id="category-name" className="form-select" defaultValue={'DEFAULT'}>
-          <option value="DEFAULT">Select Category</option>
-          <option value="produce">Produce</option>
-          <option value="packages">Packages</option>
-          <option value="supply-chain">Supply Chain</option>
-          <option value="votes">Votes</option>
-          <option value="evidence">Evidence</option>
-          <option value="luggage">Luggage</option>
-        </select>
+        <div if={!showQr ? 0 : 1}>
+          <input id="item-name" type="text" className="form-control mt-5" placeholder="Item Name" aria-label="Item Name" aria-describedby="item-search-submit-a" />
+          <label htmlFor="category-name" className="form-label"></label>
+          <select id="category-name" className="form-select" defaultValue={'DEFAULT'}>
+            <option value="DEFAULT">Select Category</option>
+            <option value="produce">Produce</option>
+            <option value="packages">Packages</option>
+            <option value="supply-chain">Supply Chain</option>
+            <option value="votes">Votes</option>
+            <option value="evidence">Evidence</option>
+            <option value="luggage">Luggage</option>
+          </select>
 
-        <div className="form-group mb-3">
-          <label htmlFor="description"></label>
-          <textarea className="form-control" id="description" rows="5" placeholder="Write a description of the item here"></textarea>
+          <div className="form-group mb-3">
+            <label htmlFor="description"></label>
+            <textarea className="form-control" id="description" rows="5" placeholder="Write a description of the item here"></textarea>
+          </div>
+
+          <p id="create-item-message" className="text-danger text-center"></p>
+        </div>
+        <div className="text-center mb-3" if={showQr ? 1 : 0}>
+          <QRCode value={generateValue} />
         </div>
 
-        <p id="create-item-message" class="text-danger text-center"></p>
 
-        <div className="text-center font-italic">
+        <div className="text-center font-italic mb-5">
           <button type="button" className="btn btn-dark w-100" onClick={function (e) {
             CreateItem();
           }}>Create</button>
@@ -229,6 +256,12 @@ export function Create({ wallet }) {
       date: new Date().toLocaleString()
     };
 
+    // TODO: Create item on blockchain
+    let response = "dummy";
+    // let response = await wallet.callContract("createItem", item);
+
+    setGenerateValue(response);
+
     error.innerHTML = "Item created successfully";
     error.classList.add("text-success");
     error.classList.remove("text-danger");
@@ -243,11 +276,7 @@ export function Create({ wallet }) {
       error.classList.remove("text-success");
       error.classList.add("text-danger");
     }, 2000);
-
-    
-
   }
-
 };
 
 export function Home() {
@@ -291,44 +320,14 @@ export function Home() {
         </a>
       </div>
 
-      <div class="card mb-5">
-        <img class="card-img-top" src="https://picsum.photos/500/300?random=3" alt="Card image cap" />
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+      <div className="card mb-5">
+        <img className="card-img-top" src="https://picsum.photos/500/300?random=3" alt="Card image cap" />
+        <div className="card-body">
+          <h5 className="card-title">Card title</h5>
+          <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" className="btn btn-primary">Go somewhere</a>
         </div>
       </div>
-
-      {/* <a href="/track"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" className height="100" /></a>
-
-      <div id="carouselExampleDark" className="carousel carousel-dark slide" data-bs-ride="carousel">
-        <div className="carousel-inner row w-100 mx-auto" role="listbox">
-        </div>
-        <div className="carousel-inner">
-          <div className="carousel-item active" data-bs-interval="10000">
-            <div className="row">
-              <div className="col"><img src="https://upload.wikimedia.org/wikipedia/commons/b/be/La_Boqueria.JPG" className="d-block w-100" alt="..." /></div>
-              <div className="col"><img src="https://upload.wikimedia.org/wikipedia/commons/b/be/La_Boqueria.JPG" className="d-block w-100" alt="..." /></div>
-              <div className="col" ><img src="https://upload.wikimedia.org/wikipedia/commons/b/be/La_Boqueria.JPG" className="d-block w-100" alt="..." /></div>
-              <div className="carousel-caption d-none d-md-block"></div>
-            </div>
-
-  
-
-            <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Previous</span>
-            </button>
-
-            <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-              <span className="carousel-control-next-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Next</span>
-            </button>
-
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };
