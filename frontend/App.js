@@ -7,23 +7,24 @@ import { v4 as uuid } from 'uuid';
 
 import './assets/global.css';
 
-import { SignInPrompt, SignOutButton, Navbar, Track } from './ui-components';
+import { SignInPrompt, SignOutButton, Navbar, Track, Footer, Create, Home } from './ui-components';
 
 export default function App({ isSignedIn, helloNEAR, wallet }) {
   const [trackId, setTrackId] = React.useState("");
 
   return (
-    <div>
+    <div >
     <BrowserRouter>
       <div>
         <Navbar></Navbar>
-        <div class="container-fluid">
+        <div className="container-fluid">
           <Routes>
             <Route path="/track" element={<Track trackId={trackId} setTrackId={setTrackId} />} />
             <Route path="/create" element={<Create wallet={wallet} />} />
             <Route path="/" element={<Home isSignedIn={isSignedIn} wallet={wallet} setTrackId={setTrackId} />} />
           </Routes>
         </div>
+        <Footer></Footer>
       </div>
     </BrowserRouter>
     </div>
@@ -31,26 +32,30 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
 }
 
 function Home({ isSignedIn, wallet, setTrackId }) {
-  const navigate = useNavigate();
-
   return (
-    <main>
-      <p style={{ textAlign: 'center' }}>
-        <input type="text"
-          onKeyUp={(event) => {
-            if (event.key === "Enter") {
-              setTrackId(event.target.value)
-              navigate('/track')
-            }
-          }}
-          placeholder="Enter ID to track" />
-        <br /><br />
-        <button onClick={() => navigate('/create')}>Create new thing to track</button>
-        <br /><br />
-        {!isSignedIn ? <SignInPrompt onClick={() => wallet.signIn()} /> : <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()} />}
-      </p>
-    </main>
-  );
+    <Home></Home>
+  )
+
+  // const navigate = useNavigate();
+
+  // return (
+  //   <main>
+  //     <p style={{ textAlign: 'center' }}>
+  //       <input type="text"
+  //         onKeyUp={(event) => {
+  //           if (event.key === "Enter") {
+  //             setTrackId(event.target.value)
+  //             navigate('/track')
+  //           }
+  //         }}
+  //         placeholder="Enter ID to track" />
+  //       <br /><br />
+  //       <button onClick={() => navigate('/create')}>Create new thing to track</button>
+  //       <br /><br />
+  //       {!isSignedIn ? <SignInPrompt onClick={() => wallet.signIn()} /> : <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()} />}
+  //     </p>
+  //   </main>
+  // );
 }
 
 function Track({ trackId, setTrackId }) {
@@ -60,37 +65,41 @@ function Track({ trackId, setTrackId }) {
 }
 
 function Create({wallet}) {
-  const [thingName, setThingName] = React.useState("");
-
   return (
-  <>
-    <h2>
-      Create
-    </h2>
-    <form>
-        <label>
-          Name:
-          <input type="text" name="name" onChange={(e) => setThingName(e.target.value)} />
-        </label>
-        <br/><br/>
-        <input type="button" onClick={() => createNewThing(wallet)} value="Submit" />
-    </form>
-  </>
-  );
+    <Create></Create>
+  )
 
-  async function createNewThing(wallet) {
-    // TODO: validate that all things are set
-    const near = await connect({
-      networkId: 'testnet',
-      keyStore: new keyStores.BrowserLocalStorageKeyStore(),
-      nodeUrl: 'https://rpc.testnet.near.org'
-    });
-    const account = await near.account(wallet.accountId);
-    const keyPair = await account.findAccessKey(null, null)
-    const subAccountId = `${uuid()}.${wallet.accountId}`;
-    const newAccount = await account.createAndDeployContract(subAccountId, keyPair.publicKey, contractWasm, 5);
-    console.log(newAccount)
-  }
+  // const [thingName, setThingName] = React.useState("");
+
+  // return (
+  // <>
+  //   <h2>
+  //     Create
+  //   </h2>
+  //   <form>
+  //       <label>
+  //         Name:
+  //         <input type="text" name="name" onChange={(e) => setThingName(e.target.value)} />
+  //       </label>
+  //       <br/><br/>
+  //       <input type="button" onClick={() => createNewThing(wallet)} value="Submit" />
+  //   </form>
+  // </>
+  // );
+
+  // async function createNewThing(wallet) {
+  //   // TODO: validate that all things are set
+  //   const near = await connect({
+  //     networkId: 'testnet',
+  //     keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+  //     nodeUrl: 'https://rpc.testnet.near.org'
+  //   });
+  //   const account = await near.account(wallet.accountId);
+  //   const keyPair = await account.findAccessKey(null, null)
+  //   const subAccountId = `${uuid()}.${wallet.accountId}`;
+  //   const newAccount = await account.createAndDeployContract(subAccountId, keyPair.publicKey, contractWasm, 5);
+  //   console.log(newAccount)
+  // }
 }
 
 //   
