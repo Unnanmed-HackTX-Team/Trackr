@@ -1,11 +1,44 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 import { useState } from "react";
 import { useZxing } from "react-zxing";
 import QRCode from "react-qr-code";
+import favicon from "./assets/favicon.png";
 
 // ReactDOM.render(<QRCode value="hey" />, document.getElementById("Container"));
 
+export function Navbar() {
+  return (
+    <div>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
+        <a class="navbar-brand" href="/">
+          <img src={favicon} width="30" height="30" class="d-inline-block align-top mx-2" alt="" />
+          Trackr
+        </a>
 
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar">
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+              <Link class="nav-link" to="/">Home</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" to="/track">Track</Link>
+            </li>
+            <li class="nav-item">
+              <Link class="nav-link" to="/create">Create</Link>
+            </li>
+          </ul>
+        </div>
+
+      </nav>
+    </div>
+  );
+}
 
 export function SignInPrompt({ onClick }) {
   return (
@@ -21,12 +54,21 @@ export function SignOutButton({ accountId, onClick }) {
   );
 };
 
+export function Track({ trackId, setTrackId }) {
+  return (
+    <>
+      <h2>Track</h2>;
+      <p>Tracking {trackId}</p>
+    </>
+  )
+}
+
 // export const BarcodeScanner = () => {
 //   const [result, setResult] = useState("");
 //   const { ref } = useZxing({
 //     onResult(result) {
 //       setResult(result.getText());
-//     },
+//     },:32
 //   });
 
 //   return (
@@ -68,7 +110,6 @@ export function SignOutButton({ accountId, onClick }) {
 //       </table>
 //     </div>
 //   );
-}
 
 // export function DropCategory({ onClick }) {
 //   return (

@@ -2,32 +2,21 @@ import 'regenerator-runtime/runtime';
 import React from 'react';
 import contractWasm from "url:./hello_near.wasm";
 import { account } from 'near-api-js';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { randomUUID } from 'crypto';
 
 import './assets/global.css';
 
-import { SignInPrompt, SignOutButton } from './ui-components';
+import { SignInPrompt, SignOutButton, Navbar, Track } from './ui-components';
 
 export default function App({ isSignedIn, helloNEAR, wallet }) {
   const [trackId, setTrackId] = React.useState("");
 
   return (
+    <div>
     <BrowserRouter>
       <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/track">Track</Link>
-            </li>
-            <li>
-              <Link to="/create">Create</Link>
-            </li>
-          </ul>
-        </nav>
+        <Navbar></Navbar>
 
         <Routes>
           <Route path="/track" element={<Track trackId={trackId} setTrackId={setTrackId} />} />
@@ -36,6 +25,7 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
         </Routes>
       </div>
     </BrowserRouter>
+    </div>
   )
 }
 
@@ -64,10 +54,7 @@ function Home({ isSignedIn, wallet, setTrackId }) {
 
 function Track({ trackId, setTrackId }) {
   return (
-    <>
-      <h2>Track</h2>;
-      <p>Tracking {trackId}</p>
-    </>
+    <Track></Track>
   )
 }
 
@@ -85,19 +72,29 @@ function Create({wallet}) {
           <input type="text" name="name" onChange={(e) => setThingName(e.target.value)} />
         </label>
         <br/><br/>
-        <input onClick={() => createNewThing(wallet)} value="Submit" />
+        <input type="button" onClick={() => createNewThing(wallet)} value="Submit" />
     </form>
   </>
   );
 
   async function createNewThing(wallet) {
     // TODO: validate that all things are set
+    const near = await initNear();
+
     console.log(wallet)
-    const account = await wallet.getWalletSelector().account(wallet.accountId);
-    const newAccount = await account.createAndDeployContract(`${randomUUID()}.${wallet.accountId}`,
-      wallet.publicKey, contractWasm, 5);
-    console.log(newAccount);
+    console.log(wallet.walletSelector.options.network)
+    // const account = await getWalletSelector().account(wallet.accountId);
+    // const newAccount = await account.createAndDeployContract(`${randomUUID()}.${wallet.accountId}`,
+      // wallet.publicKey, contractWasm, 5);
+    // console.log(newAccount);
   }
+}
+
+async function initNear() {
+  const near = await connect({
+      networkId: 'testnet',
+      nodeUrl: 'https://rpc.testnet.near.org'
+  })
 }
 
 //   
