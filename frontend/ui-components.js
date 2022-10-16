@@ -72,7 +72,7 @@ export function Track({ wallet }) {
   const [result, setResult] = useState("");
   const { ref } = useZxing({
     onResult(result) {
-      TrackItem(result.getText());
+      TrackItem(wallet, result.getText(), setMetadata)
     },
   });
   const [trackId, setTrackId] = useState("");
@@ -276,16 +276,9 @@ export function Create({ wallet }) {
     error.classList.add("text-success");
     error.classList.remove("text-danger");
 
-    // clear all textboxes
     itemname.value = "";
     categoryName.value = "DEFAULT";
     description.value = "";
-
-    Timeout(function () {
-      error.innerHTML = "";
-      error.classList.remove("text-success");
-      error.classList.add("text-danger");
-    }, 2000);
   }
 };
 
