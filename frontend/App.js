@@ -4,12 +4,13 @@ import contractWasm from "url:./hello_near.wasm";
 import { connect, keyStores, KeyPair } from 'near-api-js';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
+import { Thing } from './near-interface';
 
 import './assets/global.css';
 
 import { SignInPrompt, SignOutButton, Navbar, Track, Footer, Create, Home } from './ui-components';
 
-export default function App({ isSignedIn, helloNEAR, wallet }) {
+export default function App({ isSignedIn, wallet }) {
   const [trackId, setTrackId] = React.useState("");
 
   return (
@@ -88,6 +89,7 @@ function Create({wallet}) {
     const contractAccount = await near.account(contractAccountId);
     const contractBytes = new Uint8Array(await httpGetAsync(contractWasm))
     contractAccount.deployContract(contractBytes)
+    return contractAccountId;
   }
   // return (
   // <>
