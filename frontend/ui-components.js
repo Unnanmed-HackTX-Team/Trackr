@@ -305,7 +305,7 @@ export function Home({ isSignedIn, wallet, setTrackId }) {
 
       {!isSignedIn ? <SignInPrompt onClick={() => wallet.signIn()} /> : <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()} />}
 
-      <div id="carouselExampleIndicators" className="carousel slide mb-3" data-bs-ride="carousel">
+      {/* <div id="carouselExampleIndicators" className="carousel slide mb-3" data-bs-ride="carousel">
         <ol className="carousel-indicators">
           <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></li>
           <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
@@ -330,7 +330,7 @@ export function Home({ isSignedIn, wallet, setTrackId }) {
           <span className="carousel-control-next-icon" aria-bs-hidden="true"></span>
           <span className="sr-only">Next</span>
         </a>
-      </div>
+      </div> */}
     </>
   );
 };
