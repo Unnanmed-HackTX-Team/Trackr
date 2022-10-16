@@ -74,7 +74,7 @@ export function Track() {
   const [trackId, setTrackId] = useState("");
   const [Logs, setLogs] = useState([]);
   const [Metadata, setMetadata] = useState([]);
-  const [PageTitle, setPageTitle] = useState("first one");
+  const [dummy, setDummy] = useState("dummy");
 
   function handleTrackId(event) {
     setTrackId(event.target.value);
@@ -83,7 +83,7 @@ export function Track() {
   return (
     <>
       <div className="text-center font-italic mt-2">
-        <h1 className="display-1">{PageTitle}</h1>
+        <h1 className="display-1">Track</h1>
       </div>
 
       <div className="input-group mb-3">
@@ -98,7 +98,7 @@ export function Track() {
       <div className="card mb-2">
         <div className="card-body">
           <h5 className="card-title text-center">Metadata</h5>
-          <table className="table"  >
+          <table className="table">
             <thead>
               <tr>
                 <th >Date</th>
@@ -156,27 +156,21 @@ export function Track() {
 
   function TrackItem(id) {
     console.log("Tracking item with ID: " + id);
-    setPageTitle(id);
-// consti= 5;
-//     Logs.push({
-//       time: new Date().toLocaleString(),
-//       location: "L " + i,
-//       creator: "C " + i,
-//       state: "S " + i,
-//       notes: "N " + i
-//     });
-    // setLogs([{ time: "Date", location: "Location" }]);
-    // for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
-    //   Logs.push({
-    //     time: new Date().toLocaleString(),
-    //     location: "L " + i,
-    //     creator: "C " + i,
-    //     state: "S " + i,
-    //     notes: "N " + i
-    //   });
-    // }
-    // setLogs(Logs);
-    // console.log(Logs);
+    setDummy("dummyperson");
+
+    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
+      Logs.push({
+        time: new Date().toLocaleString(),
+        location: "L " + i,
+        creator: "C " + i,
+        state: "S " + i,
+        notes: "N " + i
+      });
+
+      setLogs(Logs);
+    }
+
+    console.log(Logs);
 
   };
 }
@@ -268,12 +262,12 @@ export function Home() {
       </div>
 
       <div class="card mb-5">
-        <img class="card-img-top" src="https://picsum.photos/500/300?random=3" alt="Card image cap"/>
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-          </div>
+        <img class="card-img-top" src="https://picsum.photos/500/300?random=3" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
       </div>
 
       {/* <a href="/track"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" className height="100" /></a>
