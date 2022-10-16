@@ -1,10 +1,7 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
-import contractWasm from "url:./hello_near.wasm";
-import { connect, keyStores, KeyPair } from 'near-api-js';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
-import { Thing } from './near-interface';
+
 
 import './assets/global.css';
 
@@ -20,9 +17,9 @@ export default function App({ isSignedIn, wallet }) {
         <Navbar></Navbar>
         <div className="container-fluid">
           <Routes>
-            <Route path="/track" element={<Track trackId={trackId} setTrackId={setTrackId} />} />
+            <Route path="/track" element={<Track trackId={trackId} wallet={wallet} setTrackId={setTrackId} />} />
             <Route path="/create" element={<Create wallet={wallet} />} />
-            <Route path="/" element={<Home isSignedIn={isSignedIn} wallet={wallet} setTrackId={setTrackId} />} />
+            <Route path="/" element={<Home2 isSignedIn={isSignedIn} wallet={wallet} setTrackId={setTrackId} />} />
           </Routes>
         </div>
         <Footer></Footer>
@@ -32,9 +29,11 @@ export default function App({ isSignedIn, wallet }) {
   )
 }
 
-function Home({ isSignedIn, wallet, setTrackId }) {
+function Home2({ isSignedIn, wallet, setTrackId }) {
   return (
+    <>
     <Home></Home>
+    </>
   )
 
   // const navigate = useNavigate();
@@ -59,38 +58,20 @@ function Home({ isSignedIn, wallet, setTrackId }) {
   // );
 }
 
-function Track({ trackId, setTrackId }) {
+function Track({ trackId, wallet, setTrackId }) {
   return (
-    <Track></Track>
+    <Track wallet={wallet}></Track>
   )
 }
 
 function Create({wallet}) {
   return (
-    <Create></Create>
+    <Create wallet={wallet}></Create>
   )
 
   // const [thingName, setThingName] = React.useState("");
 
-  async function createNewThing(wallet) {
-    // TODO: validate that all things are set
-    const keyStore = new keyStores.BrowserLocalStorageKeyStore()
-    const near = await connect({
-      networkId: 'testnet',
-      keyStore,
-      nodeUrl: 'https://rpc.testnet.near.org'
-    });
-    const account = await near.account(wallet.accountId);
-    const keyPair = await keyStore.getKey('testnet', wallet.accountId)
-
-    const contractAccountId = `${uuid()}.${wallet.accountId}`;
-    await account.createAccount(contractAccountId, keyPair.getPublicKey(), "8000000000000000000000000");
-    await keyStore.setKey('testnet', contractAccountId, keyPair);
-    const contractAccount = await near.account(contractAccountId);
-    const contractBytes = new Uint8Array(await httpGetAsync(contractWasm))
-    contractAccount.deployContract(contractBytes)
-    return contractAccountId;
-  }
+  
   // return (
   // <>
   //   <h2>
@@ -122,18 +103,7 @@ function Create({wallet}) {
   // }
 }
 
-function httpGetAsync(theUrl) {
-  return new Promise ((resolve, reject) => {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.responseType = 'arraybuffer';
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            resolve(xmlHttp.response);
-    }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous
-    xmlHttp.send(null);
-  })
-}
+
 
 //   
 

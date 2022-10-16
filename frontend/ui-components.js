@@ -5,9 +5,15 @@ import { useState, useEffect } from "react";
 import { useZxing } from "react-zxing";
 import QRCode from "react-qr-code";
 import favicon from "./assets/favicon.png";
+import img1 from "./assets/1.png";
+import img2 from "./assets/2.png";
+import img3 from "./assets/3.png";
 import { CallTracker } from 'assert';
 import { randomInt } from 'crypto';
-
+import { connect, keyStores, KeyPair, Contract } from 'near-api-js';
+import { v4 as uuid } from 'uuid';
+import { Thing } from './near-interface';
+import contractWasm from "url:./hello_near.wasm";
 
 export function Navbar() {
   return (
@@ -50,19 +56,19 @@ export function Footer() {
 
 export function SignInPrompt({ onClick }) {
   return (
-    <button onClick={onClick}>Sign in with NEAR Wallet</button>
+    <button className="btn btn-dark w-100 text-light" onClick={onClick}>Sign in with NEAR Wallet</button>
   );
 };
 
 export function SignOutButton({ accountId, onClick }) {
   return (
-    <button onClick={onClick}>
+    <button className="btn btn-dark w-100 text-light" onClick={onClick}>
       Sign out {accountId}
     </button>
   );
 };
 
-export function Track() {
+export function Track({ wallet }) {
   const [result, setResult] = useState("");
   const { ref } = useZxing({
     onResult(result) {
@@ -87,7 +93,7 @@ export function Track() {
       <div className="input-group mb-3">
         <input type="text" className="form-control" placeholder="ID Search" aria-label="ID Search" aria-describedby="id-search-submit" onChange={(evt) => handleTrackId(evt)} />
         <button className="btn btn-outline-secondary" type="button" id="id-search-submit" onClick={function (e) {
-          TrackItem(trackId);
+          TrackItem(wallet, trackId, setMetadata);
         }}>Search</button>
       </div>
 
@@ -99,25 +105,21 @@ export function Track() {
           <table className="table table-small">
             <thead>
               <tr>
-                <th >Created</th>
-                <th >Updated</th>
-                <th >Creator</th>
                 <th >Name</th>
-                <th >Desc</th>
+                <th >Category</th>
+                <th >Description</th>
+                <th >Creator</th>
+                <th >Date</th>
               </tr>
             </thead>
             <tbody>
-              {Metadata.map((val, key) => {
-                return (
-                  <tr key={key}>
-                    <td >{val.created}</td>
-                    <td >{val.updated}</td>
-                    <td >{val.creator}</td>
-                    <td >{val.name}</td>
-                    <td >{val.description}</td>
-                  </tr>
-                );
-              })}
+              <tr>
+                <td >{Metadata.name}</td>
+                <td >{Metadata.category}</td>
+                <td >{Metadata.description}</td>
+                <td >{Metadata.creator}</td>
+                <td >{Metadata.date}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -154,37 +156,41 @@ export function Track() {
     </>
   );
 
-  function TrackItem(id) {
+  async function TrackItem(wallet, id, setMetadata) {
     // clear logs and metadata
     setLogs([]);
     setMetadata([]);
-    setDummy("dummyperson");
 
     console.log("Tracking item with ID: " + id);
 
-    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
-      Logs.push({
-        time: new Date().toLocaleString(),
-        location: "L " + i,
-        creator: "C " + i,
-        state: "S " + i,
-        notes: "N " + i
-      });
+    // get logs
+    const data = await getThing(wallet, id);
+    console.log("DATA", data)
+    setMetadata(data);
 
-      setLogs(Logs);
-    }
+    // for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
+    //   Logs.push({
+    //     time: new Date().toLocaleString(),
+    //     location: "L " + i,
+    //     creator: "C " + i,
+    //     state: "S " + i,
+    //     notes: "N " + i
+    //   });
 
-    for (let i = 0; i < 1; i++) {
-      Metadata.push({
-        created: new Date().toLocaleString(),
-        updated: new Date().toLocaleString(),
-        creator: "C " + i,
-        name: "N " + i,
-        description: "D " + i
-      });
+    //   setLogs(Logs);
+    // }
 
-      setMetadata(Metadata);
-    }
+    // for (let i = 0; i < 1; i++) {
+    //   Metadata.push({
+    //     created: new Date().toLocaleString(),
+    //     updated: new Date().toLocaleString(),
+    //     creator: "C " + i,
+    //     name: "N " + i,
+    //     description: "D " + i
+    //   });
+
+    //   setMetadata(Metadata);
+    // }
 
     console.log("Logs: " + Logs);
     console.log("Metadata: " + Metadata);
@@ -222,21 +228,21 @@ export function Create({ wallet }) {
 
           <p id="create-item-message" className="text-danger text-center"></p>
         </div>
-        <div className="text-center mb-3" if={showQr ? 1 : 0}>
+        <div className="text-center mb-3 d-none" id="show-qr">
           <QRCode value={generateValue} />
         </div>
 
 
         <div className="text-center font-italic mb-5">
           <button type="button" className="btn btn-dark w-100" onClick={function (e) {
-            CreateItem();
+            CreateItem(wallet);
           }}>Create</button>
         </div>
       </form>
     </>
   )
 
-  function CreateItem() {
+  async function CreateItem(wallet) {
     let itemname = document.getElementById("item-name");
     let categoryName = document.getElementById("category-name");
     let description = document.getElementById("description");
@@ -248,19 +254,23 @@ export function Create({ wallet }) {
     }
 
     let item = {
-      name: itemname,
-      category: categoryName,
-      description: description,
+      name: itemname.value,
+      category: categoryName.value,
+      description: description.value,
       creator: "dummy",
       // creator: wallet.getPublicKey(),
       date: new Date().toLocaleString()
     };
 
-    // TODO: Create item on blockchain
-    let response = "dummy";
-    // let response = await wallet.callContract("createItem", item);
+    console.log("Creating thing on chain!", item)
+    const itemId = await createNewThing(wallet);
+    console.log(itemId)
+    await setThing(wallet, itemId, item);
+    console.log("Transaction complete!");
 
-    setGenerateValue(response);
+    setGenerateValue(itemId);
+    document.getElementById("show-qr").classList.remove("d-none");
+    console.log("showing qr");
 
     error.innerHTML = "Item created successfully";
     error.classList.add("text-success");
@@ -271,7 +281,7 @@ export function Create({ wallet }) {
     categoryName.value = "DEFAULT";
     description.value = "";
 
-    setTimeout(function () {
+    Timeout(function () {
       error.innerHTML = "";
       error.classList.remove("text-success");
       error.classList.add("text-danger");
@@ -279,21 +289,23 @@ export function Create({ wallet }) {
   }
 };
 
-export function Home() {
+export function Home({ isSignedIn, wallet, setTrackId }) {
   return (
     <>
       <div className="jumbotron mt-4">
         <h1 className="display-4">Oh no!</h1>
         <p className="lead">Ever lost something dear to you? Well you're in luck!</p>
         <hr className="my-4" />
-        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <p>We used Blockchain technology to revolutionize tracking, with reliability and security at the highest priority.</p>
         <p className="lead">
           <a className="btn btn-dark btn-lg w-100" href="/track" role="button">
             <i className="fa-solid fa-qrcode mx-2"></i>Scan</a>
         </p>
       </div>
 
-      <div id="carouselExampleIndicators" className="carousel slide mb-5" data-bs-ride="carousel">
+      {!isSignedIn ? <SignInPrompt onClick={() => wallet.signIn()} /> : <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()} />}
+
+      <div id="carouselExampleIndicators" className="carousel slide mb-3" data-bs-ride="carousel">
         <ol className="carousel-indicators">
           <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></li>
           <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
@@ -301,13 +313,13 @@ export function Home() {
         </ol>
         <div className="carousel-inner">
           <div className="carousel-item active">
-            <img className="d-block w-100" src="https://picsum.photos/500/300?random=1" alt="First slide" />
+            <img className="d-block w-100" src={img1} alt="First slide" />
           </div>
           <div className="carousel-item">
-            <img className="d-block w-100" src="https://picsum.photos/500/300?random=3" alt="Second slide" />
+            <img className="d-block w-100" src={img2} alt="Second slide" />
           </div>
           <div className="carousel-item">
-            <img className="d-block w-100" src="https://picsum.photos/500/300?random=2" alt="Third slide" />
+            <img className="d-block w-100" src={img3} alt="Third slide" />
           </div>
         </div>
         <a className="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
@@ -319,15 +331,49 @@ export function Home() {
           <span className="sr-only">Next</span>
         </a>
       </div>
-
-      <div className="card mb-5">
-        <img className="card-img-top" src="https://picsum.photos/500/300?random=3" alt="Card image cap" />
-        <div className="card-body">
-          <h5 className="card-title">Card title</h5>
-          <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-          <a href="#" className="btn btn-primary">Go somewhere</a>
-        </div>
-      </div>
     </>
   );
 };
+
+async function createNewThing(wallet) {
+  // TODO: validate that all things are set
+  const keyStore = new keyStores.BrowserLocalStorageKeyStore()
+  const near = await connect({
+    networkId: 'testnet',
+    keyStore,
+    nodeUrl: 'https://rpc.testnet.near.org'
+  });
+  const account = await near.account(wallet.accountId);
+  const keyPair = await keyStore.getKey('testnet', wallet.accountId)
+
+  const contractAccountId = `${uuid()}.${wallet.accountId}`;
+  await account.createAccount(contractAccountId, keyPair.getPublicKey(), "8000000000000000000000000");
+  await keyStore.setKey('testnet', contractAccountId, keyPair);
+  const contractAccount = await near.account(contractAccountId);
+  const contractBytes = new Uint8Array(await httpGetAsync(contractWasm))
+  contractAccount.deployContract(contractBytes)
+  return contractAccountId;
+}
+
+async function getThing(wallet, itemId) {
+  const thing = new Thing({ contractId: itemId, walletToUse: wallet });
+  return await thing.getThing(itemId);
+}
+
+async function setThing(wallet, itemId, itemData) {
+  const thing = new Thing({ contractId: itemId, walletToUse: wallet });
+  return await thing.setThing(itemData);
+}
+
+function httpGetAsync(theUrl) {
+  return new Promise((resolve, reject) => {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.responseType = 'arraybuffer';
+    xmlHttp.onreadystatechange = function () {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+        resolve(xmlHttp.response);
+    }
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+  })
+}

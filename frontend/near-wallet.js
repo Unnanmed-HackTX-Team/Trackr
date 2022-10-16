@@ -2,12 +2,12 @@
 
 // near api js
 import { providers, connect, keyStores, WalletConnection, KeyPair } from 'near-api-js';
-
 // wallet selector UI
 import '@near-wallet-selector/modal-ui/styles.css';
 import { setupModal } from '@near-wallet-selector/modal-ui';
 import LedgerIconUrl from '@near-wallet-selector/ledger/assets/ledger-icon.png';
 import MyNearIconUrl from '@near-wallet-selector/my-near-wallet/assets/my-near-wallet-icon.png';
+import { Thing } from './near-interface';
 
 // wallet selector options
 // import { setupWalletSelector } from '@near-wallet-selector/core';
@@ -104,21 +104,10 @@ export class Wallet {
   // Call a method that changes the contract's state
   async callMethod({ contractId, method, args = {}, gas = THIRTY_TGAS, deposit = NO_DEPOSIT }) {
     // Sign a transaction with the "FunctionCall" action
-    return await this.wallet.signAndSendTransaction({
-      signerId: this.accountId,
-      receiverId: contractId,
-      actions: [
-        {
-          type: 'FunctionCall',
-          params: {
-            methodName: method,
-            args,
-            gas,
-            deposit,
-          },
-        },
-      ],
-    });
+    console.log(this.wallet)
+    console.log(transaction)
+    const thing = new Thing();
+    return false 
   }
 
   // Get transaction result from the network
