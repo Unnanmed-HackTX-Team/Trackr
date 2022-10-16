@@ -98,7 +98,7 @@ export function Track() {
       <div className="card mb-2">
         <div className="card-body">
           <h5 className="card-title text-center">Metadata</h5>
-          <table className="table" id="table-small">
+          <table className="table table-small">
             <thead>
               <tr>
                 <th >Date</th>
@@ -125,7 +125,7 @@ export function Track() {
       <div className="card mb-5 ">
         <div className="card-body">
           <h5 className="card-title text-center">Logs</h5>
-          <table className="table">
+          <table className="table table-small" >
             <thead>
               <tr>
                 <th >Time</th>
