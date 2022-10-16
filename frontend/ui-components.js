@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useZxing } from "react-zxing";
 import QRCode from "react-qr-code";
 import favicon from "./assets/favicon.png";
 import { CallTracker } from 'assert';
+import { randomInt } from 'crypto';
 
 // ReactDOM.render(<QRCode value="hey" />, document.getElementById("Container"));
 
@@ -71,6 +72,8 @@ export function Track() {
     },
   });
   const [trackId, setTrackId] = useState("");
+  const [Logs, setLogs] = useState([]);
+  const [Metadata, setMetadata] = useState([]);
 
   function handleTrackId(event) {
     setTrackId(event.target.value);
@@ -79,7 +82,7 @@ export function Track() {
   return (
     <>
       <div className="text-center font-italic mt-2">
-        <h1 className="display-1">Track Item</h1>
+        <h1 className="display-1">Track</h1>
       </div>
 
       <div className="input-group mb-3">
@@ -94,69 +97,55 @@ export function Track() {
       <div className="card mb-2">
         <div className="card-body">
           <h5 className="card-title text-center">Metadata</h5>
-          <table className="table table-striped">
+          <table className="table"  >
             <thead>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+                <th >Date</th>
+                <th >Creator</th>
+                <th >Name</th>
+                <th >Description</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
-              </tr>
+              {Metadata.map((key) => {
+                return (
+                  <tr key={key}>
+                    <td >{val.date}</td>
+                    <td >{val.creator}</td>
+                    <td >{val.name}</td>
+                    <td >{val.description}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
-      <div className="card mb-5">
+      <div className="card mb-5 ">
         <div className="card-body">
           <h5 className="card-title text-center">Logs</h5>
-          <table className="table table-striped">
+          <table className="table">
             <thead>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+                <th >Time</th>
+                <th >Location</th>
+                <th >Creator</th>
+                <th >State</th>
+                <th >Notes</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jacob</td>
-                <td>Thornton</td>
-                <td>@fat</td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td>Larry</td>
-                <td>the Bird</td>
-                <td>@twitter</td>
-              </tr>
+              {Logs.map((val, key) => {
+                return (
+                  <tr key={key}>
+                    <td >{val.time}</td>
+                    <td >{val.location}</td>
+                    <td >{val.creator}</td>
+                    <td >{val.state}</td>
+                    <td >{val.notes}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -165,101 +154,102 @@ export function Track() {
   );
 
   function TrackItem(id) {
-    // TODO: Call contract to get item info
-    console.log("Tracking item with id: " + id);
-    // TODO: Display item info
-  }
-};
+    console.log("Tracking item with ID: " + id);
+    // setLogs([{ time: "Date", location: "Location" }]);
+    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
+      Logs.push({
+        time: new Date().toLocaleString(),
+        location: "L " + i,
+        creator: "C " + i,
+        state: "S " + i,
+        notes: "N " + i
+      });
+    }
+    setLogs(Logs, () => {
+      console.log("Logs updated");
+    });
+    console.log(Logs);
+
+  };
+}
 
 export function Create({ wallet }) {
   return (
     <>
-      <div className="text-center font-italic mt-2">
+      <div className="text-center font-italic mt-4">
         <h1 className="display-1">Create Item</h1>
       </div>
 
-      <div className="input-group mb-3">
+      <div className="input-group mt-5">
         <input type="text" className="form-control" placeholder="Item Name" aria-label="Item Name" aria-describedby="item-search-submit-a" />
 
       </div>
 
+      <form>
+        <label htmlFor="category-name" className="form-label"></label>
+        <select id="category-name" className="form-select" defaultValue={'DEFAULT'}>
+          <option value="DEFAULT">Select Category</option>
+          <option value="produce">Produce</option>
+          <option value="packages">Packages</option>
+          <option value="supply-chain">Supply Chain</option>
+          <option value="votes">Votes</option>
+          <option value="evidence">Evidence</option>
+        </select>
 
-      <label for="category-name" className="form-label">Category Name</label>
-      <select id="category-name" className="form-select">
-        <option selected>Select</option>
-        <option value="1">Produce</option>
-        <option value="2">Packages</option>
-        <option value="3">Supply Chain</option>
-        <option value="3">Votes</option>
-        <option value="3">Evidence</option>
-      </select>
-      <div className="text-center font-italic mt-2">
-        <button type="button" className="btn btn-dark w-100">Create</button>
-      </div>
+        <div className="form-group mb-3">
+          <label htmlFor="description"></label>
+          <textarea className="form-control" id="description" rows="5" placeholder="Write a description of the item here"></textarea>
+        </div>
 
-      <div class="form-group">
-        <label for="exampleFormControlTextarea3">Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea3" rows="7"></textarea>
-      </div>
-
-
+        <div className="text-center font-italic">
+          <button type="button" className="btn btn-dark w-100" onClick={function (e) {
+            CreateItem();
+          }}>Create</button>
+        </div>
+      </form>
     </>
   )
+
+  function CreateItem() {
+    // form validation
+    console.log("Creating item");
+
+  }
+
 };
 
 export function Home() {
   return (
     <>
-      <p>this is the home</p>
+      <a href="/track"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" /></a>
+
+      <div id="carouselExampleDark" className="carousel carousel-dark slide" data-bs-ride="carousel">
+        <div className="carousel-inner row w-100 mx-auto" role="listbox">
+        </div>
+        <div className="carousel-inner">
+          <div className="carousel-item active" data-bs-interval="10000">
+            <div className="row">
+              <div className="col"><img src="https://upload.wikimedia.org/wikipedia/commons/b/be/La_Boqueria.JPG" className="d-block w-100" alt="..." /></div>
+              <div className="col"><img src="https://upload.wikimedia.org/wikipedia/commons/b/be/La_Boqueria.JPG" className="d-block w-100" alt="..." /></div>
+              <div className="col" ><img src="https://upload.wikimedia.org/wikipedia/commons/b/be/La_Boqueria.JPG" className="d-block w-100" alt="..." /></div>
+              <div className="carousel-caption d-none d-md-block"></div>
+            </div>
+
+  
+
+            <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+
+            <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Next</span>
+            </button>
+
+          </div>
+        </div>
+      </div>
     </>
   );
 };
-
-
-// MetaData = [
-//   { date: "H=MM/DD/YY", creator: "H", name: "J", description: "a" }
-// ]
-// //need to put data into the table
-// export function MetaData() {
-//   return (
-//     <div classNameName="MetaData">
-//       <table classNameName="MetaData_table">
-//         <tr>
-//           <th>Date</th>
-//           <th>Creator</th>
-//           <th>Name</th>
-//           <th>Description</th>
-//         </tr>
-//         {MetaData.map((val, key) => {
-//           return (
-//             <tr key={key}>
-//               <td>{val.date}</td>
-//               <td>{val.creator}</td>
-//               <td>{val.name}</td>
-//               <td>{val.description}</td>
-//             </tr>
-//           )
-//         })}
-//       </table>
-//     </div>
-//   );
-
-// export function DropCategory({ onClick }) {
-//   return (
-//     <div>
-//       <label>
-//         Category?
-//         <select>
-//           <option value="produce">Produce</option>
-//           <option value="voters">voters</option>
-//           <option value="packages">packages</option>
-//           <option value="supply_chain">supply chain</option>
-//           <option value="evidence">evidence</option>
-//           <option value="luggages">luggages</option>
-//         </select>
-//       </label>
-//     </div>
-//   );
-// };
-
-
