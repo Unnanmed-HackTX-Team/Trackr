@@ -32,7 +32,7 @@ export default function App({ isSignedIn, wallet }) {
 function Home2({ isSignedIn, wallet, setTrackId }) {
   return (
     <>
-    <Home></Home>
+    <Home isSignedIn={isSignedIn} wallet={wallet} setTrack={setTrackId}></Home>
     </>
   )
 
