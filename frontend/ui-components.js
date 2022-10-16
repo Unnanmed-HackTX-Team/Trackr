@@ -98,7 +98,7 @@ export function Track() {
       <div className="card mb-2">
         <div className="card-body">
           <h5 className="card-title text-center">Metadata</h5>
-          <table className="table">
+          <table className="table" id="table-small">
             <thead>
               <tr>
                 <th >Date</th>
@@ -155,6 +155,7 @@ export function Track() {
   );
 
   function TrackItem(id) {
+    setLogs([]);
     console.log("Tracking item with ID: " + id);
     setDummy("dummyperson");
 
