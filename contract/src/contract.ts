@@ -1,5 +1,4 @@
 import { NearBindgen, call, near, Vector, view } from "near-sdk-js";
-
 @NearBindgen({})
 class Thing {
     vector: Vector;
@@ -7,7 +6,7 @@ class Thing {
     constructor() {
         this.vector = new Vector('unique-id-vector1');
     }
-
+    
     @view({})
     get_thing(account_id: number): Metadata {
         near.log("get_thing", account_id);

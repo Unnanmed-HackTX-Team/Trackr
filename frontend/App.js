@@ -1,22 +1,166 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
+import contractWasm from "url:./hello_near.wasm";
+import { account } from 'near-api-js';
+import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { randomUUID } from 'crypto';
 
 import './assets/global.css';
 
-import { BarcodeScanner, EducationalText, SignInPrompt, SignOutButton, Popup, MetaData } from './ui-components';
-
+import { SignInPrompt, SignOutButton } from './ui-components';
 
 export default function App({ isSignedIn, helloNEAR, wallet }) {
-  
-  
-  const [buttonPopup, setButtonPopup] = React.useState(false);
-  const [trackId, setButtonPopup] = React.useState(false);
+  const [trackId, setTrackId] = React.useState("");
+
+  return (
+    <BrowserRouter>
+      <div>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/track">Track</Link>
+            </li>
+            <li>
+              <Link to="/create">Create</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <Routes>
+          <Route path="/track" element={<Track trackId={trackId} setTrackId={setTrackId} />} />
+          <Route path="/create" element={<Create wallet={wallet} />} />
+          <Route path="/" element={<Home isSignedIn={isSignedIn} wallet={wallet} setTrackId={setTrackId} />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  )
+}
+
+function Home({ isSignedIn, wallet, setTrackId }) {
+  const navigate = useNavigate();
+
+  return (
+    <main>
+      <p style={{ textAlign: 'center' }}>
+        <input type="text"
+          onKeyUp={(event) => {
+            if (event.key === "Enter") {
+              setTrackId(event.target.value)
+              navigate('/track')
+            }
+          }}
+          placeholder="Enter ID to track" />
+        <br /><br />
+        <button onClick={() => navigate('/create')}>Create new thing to track</button>
+        <br /><br />
+        {!isSignedIn ? <SignInPrompt onClick={() => wallet.signIn()} /> : <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()} />}
+      </p>
+    </main>
+  );
+}
+
+function Track({ trackId, setTrackId }) {
+  return (
+    <>
+      <h2>Track</h2>;
+      <p>Tracking {trackId}</p>
+    </>
+  )
+}
+
+function Create({wallet}) {
+  const [thingName, setThingName] = React.useState("");
+
+  return (
+  <>
+    <h2>
+      Create
+    </h2>
+    <form>
+        <label>
+          Name:
+          <input type="text" name="name" onChange={(e) => setThingName(e.target.value)} />
+        </label>
+        <br/><br/>
+        <input onClick={() => createNewThing(wallet)} value="Submit" />
+    </form>
+  </>
+  );
+
+  async function createNewThing(wallet) {
+    // TODO: validate that all things are set
+    console.log(wallet)
+    const account = await wallet.getWalletSelector().account(wallet.accountId);
+    const newAccount = await account.createAndDeployContract(`${randomUUID()}.${wallet.accountId}`,
+      wallet.publicKey, contractWasm, 5);
+    console.log(newAccount);
+  }
+}
+
+//   
+
+//   /// If user not signed-in with wallet - show prompt
+//   // Sign-in flow will reload the page later
+  // if (!trackId && !showCreateDialog) {
+    
+  // }
 
 
- 
-  // const [valueFromBlockchain, setValueFromBlockchain] = React.useState();
 
-  // const [uiPleaseWait, setUiPleaseWait] = React.useState(true);
+//   if (showCreateDialog) {
+
+//   }
+
+//   if (trackId) {
+//     return (
+//       <main>
+//         Track thing with id {trackId}
+//       </main>
+//     );
+//   }
+
+
+
+//   //   function changeGreeting(e) {
+//   //     e.preventDefault();
+//   //     setUiPleaseWait(true);
+//   //     const { greetingInput } = e.target.elements;
+//   //     helloNEAR.setGreeting(greetingInput.value)
+//   //       .then(async () => { return helloNEAR.getGreeting(); })
+//   //       .then(setValueFromBlockchain)
+//   //       .finally(() => {
+//   //         setUiPleaseWait(false);
+//   //       });
+//   //   }
+//   if (!dropdown) {
+//   }
+// }
+
+
+// if (!button){
+//   return(
+//     <Router>
+//       <div>
+//         
+//         <Link to="/about">
+//           <button>Click</button>
+//         </Link>
+
+//         <br />
+//         <br />
+
+//         
+//         <a href="https://google.com" target="_blank" rel="noreferrer">
+//           <button>Click</button>
+//         </a>
+//       </div>
+//     </Router>
+//   )
+// }
+
 
   // Get blockchain state once on component load
   // React.useEffect(() => {
@@ -27,55 +171,3 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
   //       setUiPleaseWait(false);
   //     });
   // }, []);
-
-  /// If user not signed-in with wallet - show prompt
-  if (!isSignedIn) {   
-    // Sign-in flow will reload the page later
-    return (
-      <div>
-        <input type="text" name="id number?" onClick={setTrackId} /> 
-        <br/>
-        <SignInPrompt onClick={() => wallet.signIn()} />
-      </div>
-    );
-    // return <BarcodeScanner />;
-  }
-
-//   function changeGreeting(e) {
-//     e.preventDefault();
-//     setUiPleaseWait(true);
-//     const { greetingInput } = e.target.elements;
-//     helloNEAR.setGreeting(greetingInput.value)
-//       .then(async () => { return helloNEAR.getGreeting(); })
-//       .then(setValueFromBlockchain)
-//       .finally(() => {
-//         setUiPleaseWait(false);
-//       });
-//   }
-
-//   return (
-//     <>
-//       <SignOutButton accountId={wallet.accountId} onClick={() => wallet.signOut()} />
-//       <main className={uiPleaseWait ? 'please-wait' : ''}>
-//         <h1>
-//           The contract says: <span className="greeting">{valueFromBlockchain}</span>
-//         </h1>
-//         <form onSubmit={changeGreeting} className="change">
-//           <label>Change greeting:</label>
-//           <div>
-//             <input
-//               autoComplete="off"
-//               defaultValue={valueFromBlockchain}
-//               id="greetingInput"
-//             />
-//             <button>
-//               <span>Save</span>
-//               <div className="loader"></div>
-//             </button>
-//           </div>
-//         </form>
-//         <EducationalText />
-//       </main>
-//     </>
-//   );
-}
