@@ -74,6 +74,7 @@ export function Track() {
   const [trackId, setTrackId] = useState("");
   const [Logs, setLogs] = useState([]);
   const [Metadata, setMetadata] = useState([]);
+  const [PageTitle, setPageTitle] = useState("first one");
 
   function handleTrackId(event) {
     setTrackId(event.target.value);
@@ -82,7 +83,7 @@ export function Track() {
   return (
     <>
       <div className="text-center font-italic mt-2">
-        <h1 className="display-1">Track</h1>
+        <h1 className="display-1">{PageTitle}</h1>
       </div>
 
       <div className="input-group mb-3">
@@ -155,20 +156,27 @@ export function Track() {
 
   function TrackItem(id) {
     console.log("Tracking item with ID: " + id);
+    setPageTitle(id);
+// consti= 5;
+//     Logs.push({
+//       time: new Date().toLocaleString(),
+//       location: "L " + i,
+//       creator: "C " + i,
+//       state: "S " + i,
+//       notes: "N " + i
+//     });
     // setLogs([{ time: "Date", location: "Location" }]);
-    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
-      Logs.push({
-        time: new Date().toLocaleString(),
-        location: "L " + i,
-        creator: "C " + i,
-        state: "S " + i,
-        notes: "N " + i
-      });
-    }
-    setLogs(Logs, () => {
-      console.log("Logs updated");
-    });
-    console.log(Logs);
+    // for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
+    //   Logs.push({
+    //     time: new Date().toLocaleString(),
+    //     location: "L " + i,
+    //     creator: "C " + i,
+    //     state: "S " + i,
+    //     notes: "N " + i
+    //   });
+    // }
+    // setLogs(Logs);
+    // console.log(Logs);
 
   };
 }
@@ -221,7 +229,54 @@ export function Create({ wallet }) {
 export function Home() {
   return (
     <>
-      <a href="/track"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" /></a>
+      <div className="jumbotron mt-4">
+        <h1 className="display-4">Oh no!</h1>
+        <p className="lead">Ever lost something dear to you? Well you're in luck!</p>
+        <hr className="my-4" />
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <p className="lead">
+          <a className="btn btn-dark btn-lg w-100" href="/track" role="button">
+            <i className="fa-solid fa-qrcode mx-2"></i>Scan</a>
+        </p>
+      </div>
+
+      <div id="carouselExampleIndicators" className="carousel slide mb-5" data-bs-ride="carousel">
+        <ol className="carousel-indicators">
+          <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active"></li>
+          <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
+          <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
+        </ol>
+        <div className="carousel-inner">
+          <div className="carousel-item active">
+            <img className="d-block w-100" src="https://picsum.photos/500/300?random=1" alt="First slide" />
+          </div>
+          <div className="carousel-item">
+            <img className="d-block w-100" src="https://picsum.photos/500/300?random=3" alt="Second slide" />
+          </div>
+          <div className="carousel-item">
+            <img className="d-block w-100" src="https://picsum.photos/500/300?random=2" alt="Third slide" />
+          </div>
+        </div>
+        <a className="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+          <span className="carousel-control-prev-icon" aria-bs-hidden="true"></span>
+          <span className="sr-only">Previous</span>
+        </a>
+        <a className="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+          <span className="carousel-control-next-icon" aria-bs-hidden="true"></span>
+          <span className="sr-only">Next</span>
+        </a>
+      </div>
+
+      <div class="card mb-5">
+        <img class="card-img-top" src="https://picsum.photos/500/300?random=3" alt="Card image cap"/>
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+      </div>
+
+      {/* <a href="/track"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" className height="100" /></a>
 
       <div id="carouselExampleDark" className="carousel carousel-dark slide" data-bs-ride="carousel">
         <div className="carousel-inner row w-100 mx-auto" role="listbox">
@@ -249,7 +304,7 @@ export function Home() {
 
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };
