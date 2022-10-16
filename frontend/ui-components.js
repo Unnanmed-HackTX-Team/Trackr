@@ -170,9 +170,6 @@ export function Track() {
 
       setLogs(Logs);
     }
-
-    console.log(Logs);
-
   };
 }
 
@@ -183,12 +180,8 @@ export function Create({ wallet }) {
         <h1 className="display-1">Create Item</h1>
       </div>
 
-      <div className="input-group mt-5">
-        <input type="text" className="form-control" placeholder="Item Name" aria-label="Item Name" aria-describedby="item-search-submit-a" />
-
-      </div>
-
       <form>
+        <input id="item-name" type="text" className="form-control mt-5" placeholder="Item Name" aria-label="Item Name" aria-describedby="item-search-submit-a" />
         <label htmlFor="category-name" className="form-label"></label>
         <select id="category-name" className="form-select" defaultValue={'DEFAULT'}>
           <option value="DEFAULT">Select Category</option>
@@ -197,12 +190,15 @@ export function Create({ wallet }) {
           <option value="supply-chain">Supply Chain</option>
           <option value="votes">Votes</option>
           <option value="evidence">Evidence</option>
+          <option value="luggage">Luggage</option>
         </select>
 
         <div className="form-group mb-3">
           <label htmlFor="description"></label>
           <textarea className="form-control" id="description" rows="5" placeholder="Write a description of the item here"></textarea>
         </div>
+
+        <p id="create-item-message" class="text-danger text-center"></p>
 
         <div className="text-center font-italic">
           <button type="button" className="btn btn-dark w-100" onClick={function (e) {
@@ -214,8 +210,41 @@ export function Create({ wallet }) {
   )
 
   function CreateItem() {
-    // form validation
-    console.log("Creating item");
+    let itemname = document.getElementById("item-name");
+    let categoryName = document.getElementById("category-name");
+    let description = document.getElementById("description");
+    let error = document.getElementById("create-item-message");
+
+    if (itemname.value == "" || categoryName.value == "DEFAULT" || description.value == "") {
+      error.innerHTML = "Please fill out all fields";
+      return;
+    }
+
+    let item = {
+      name: itemname,
+      category: categoryName,
+      description: description,
+      creator: "dummy",
+      // creator: wallet.getPublicKey(),
+      date: new Date().toLocaleString()
+    };
+
+    error.innerHTML = "Item created successfully";
+    error.classList.add("text-success");
+    error.classList.remove("text-danger");
+
+    // clear all textboxes
+    itemname.value = "";
+    categoryName.value = "DEFAULT";
+    description.value = "";
+
+    setTimeout(function () {
+      error.innerHTML = "";
+      error.classList.remove("text-success");
+      error.classList.add("text-danger");
+    }, 2000);
+
+    
 
   }
 
