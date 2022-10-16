@@ -1,7 +1,7 @@
 /* A helper file that simplifies using the wallet selector */
 
 // near api js
-import { providers } from 'near-api-js';
+import { providers, connect, keyStores, WalletConnection } from 'near-api-js';
 
 // wallet selector UI
 import '@near-wallet-selector/modal-ui/styles.css';
@@ -35,6 +35,20 @@ export class Wallet {
 
   // To be called when the website loads
   async startUp() {
+    const connectionConfig = {
+      networkId: "testnet",
+      keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+      nodeUrl: "https://rpc.testnet.near.org",
+      walletUrl: "https://wallet.testnet.near.org",
+      helperUrl: "https://helper.testnet.near.org",
+      explorerUrl: "https://explorer.testnet.near.org",
+    };
+
+    // connect to NEAR
+    const nearConnection = await connect(connectionConfig);
+
+    // create wallet connection
+    const walletConnection = new WalletConnection(nearConnection);
     this.walletSelector = await setupWalletSelector({
       network: this.network,
       modules: [setupMyNearWallet({ iconUrl: MyNearIconUrl }),

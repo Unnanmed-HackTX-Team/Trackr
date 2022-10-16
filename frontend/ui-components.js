@@ -57,7 +57,23 @@ export function SignOutButton({ accountId, onClick }) {
 export function Track({ trackId, setTrackId }) {
   return (
     <>
-      <h2>Track</h2>;
+      <div class="text-center font-italic">
+        <h1 class="display-1">Track Item</h1>
+      </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="ID Search" aria-label="ID Search" aria-describedby="id-search-submit" />
+        <button class="btn btn-outline-secondary" type="button" id="id-search-submit">Search</button>
+      </div>
+
+
+
+      <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-light btn-lg">
+          <QRCode value={trackId} />
+        </button>
+      </div>
+
       <p>Tracking {trackId}</p>
     </>
   )

@@ -1,9 +1,9 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
 import contractWasm from "url:./hello_near.wasm";
-import { account } from 'near-api-js';
+import { connect, keyStores } from 'near-api-js';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { randomUUID } from 'crypto';
+import { v4 as uuid } from 'uuid';
 
 import './assets/global.css';
 
@@ -17,12 +17,13 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
     <BrowserRouter>
       <div>
         <Navbar></Navbar>
-
-        <Routes>
-          <Route path="/track" element={<Track trackId={trackId} setTrackId={setTrackId} />} />
-          <Route path="/create" element={<Create wallet={wallet} />} />
-          <Route path="/" element={<Home isSignedIn={isSignedIn} wallet={wallet} setTrackId={setTrackId} />} />
-        </Routes>
+        <div class="container-fluid">
+          <Routes>
+            <Route path="/track" element={<Track trackId={trackId} setTrackId={setTrackId} />} />
+            <Route path="/create" element={<Create wallet={wallet} />} />
+            <Route path="/" element={<Home isSignedIn={isSignedIn} wallet={wallet} setTrackId={setTrackId} />} />
+          </Routes>
+        </div>
       </div>
     </BrowserRouter>
     </div>
@@ -79,22 +80,17 @@ function Create({wallet}) {
 
   async function createNewThing(wallet) {
     // TODO: validate that all things are set
-    const near = await initNear();
-
-    console.log(wallet)
-    console.log(wallet.walletSelector.options.network)
-    // const account = await getWalletSelector().account(wallet.accountId);
-    // const newAccount = await account.createAndDeployContract(`${randomUUID()}.${wallet.accountId}`,
-      // wallet.publicKey, contractWasm, 5);
-    // console.log(newAccount);
-  }
-}
-
-async function initNear() {
-  const near = await connect({
+    const near = await connect({
       networkId: 'testnet',
+      keyStore: new keyStores.BrowserLocalStorageKeyStore(),
       nodeUrl: 'https://rpc.testnet.near.org'
-  })
+    });
+    const account = await near.account(wallet.accountId);
+    const keyPair = await account.findAccessKey(null, null)
+    const subAccountId = `${uuid()}.${wallet.accountId}`;
+    const newAccount = await account.createAndDeployContract(subAccountId, keyPair.publicKey, contractWasm, 5);
+    console.log(newAccount)
+  }
 }
 
 //   
